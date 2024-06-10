@@ -8,7 +8,11 @@ module.exports = {
     ...createGlobPatternsForDependencies(__dirname),
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'af-pattern': "url('/img/af_pattern_bg.png')",
+      },
+    },
   },
   plugins: [],
 };

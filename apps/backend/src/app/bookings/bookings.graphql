@@ -1,0 +1,116 @@
+type EmailAddress {
+  address: String!
+}
+
+union ContactDetail = EmailAddress
+
+type Translation {
+  code: String!
+  name: String!
+}
+
+type SellingClass {
+  code: String!
+}
+
+type Terminal {
+  name: String!
+}
+
+type Passenger {
+  id: Int!
+  firstName: String!
+  lastName: String!
+  title: Translation!
+}
+
+enum ITINERARY_TYPE {
+  ONE_WAY
+  ROUND_TRIP
+}
+
+type City {
+  IATACode: String!
+  name: String
+  country: Translation
+}
+
+type Airport {
+  IATACode: String!
+  name: String!
+  city: City!
+}
+
+enum SEGMENT_TYPE {
+  LOCAL
+  INTERNATIONAL
+}
+
+interface Flight {
+  number: String!
+  carrier: Translation!
+}
+
+type OperatingFlight implements Flight {
+  number: String!
+  carrier: Translation!
+  duration: String!
+  flown: Boolean!
+  checkInStart: String!
+  localCheckInStart: String!
+  checkInEnd: String!
+  localCheckInEnd: String!
+  scheduledArrival: String!
+  localScheduledArrival: String!
+  scheduledDeparture: String!
+  localScheduledDeparture: String!
+  arrivalTerminal: Terminal!
+  cabin: Translation!
+  equipment: Translation!
+}
+
+type MarketingFlight implements Flight {
+  number: String!
+  carrier: Translation!
+  status: Translation!
+  numberOfStops: Int!
+  sellingClass: SellingClass!
+  operatingFlight: OperatingFlight!
+}
+
+type Segment {
+  id: Int!
+  type: SEGMENT_TYPE!
+  informational: Boolean!
+  departFrom: Airport!
+  arriveOn: Airport!
+  marketingFlight: MarketingFlight!
+}
+
+type Connection {
+  id: Int!
+  duration: String!
+  origin: Airport!
+  destination: Airport!
+  segments: [Segment]
+}
+
+type Itinerary {
+  type: ITINERARY_TYPE!
+  connections: [Connection!]!
+}
+
+type Booking {
+  bookingCode: String!
+  contactDetails: [ContactDetail!]!
+  itinerary: Itinerary!
+  passengers: Passenger! # in the mock it was provided as a single value, not array
+}
+
+type Query {
+  booking(bookingCode: String!, lastName: String!): Booking!
+}
+
+schema {
+  query: Query
+}
