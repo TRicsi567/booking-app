@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   CommonModule,
   DatePipe,
@@ -6,11 +6,19 @@ import {
   TitleCasePipe,
 } from '@angular/common';
 import { Router } from '@angular/router';
-import { Duration } from 'luxon';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { Booking, ITINERARY_TYPE } from '@/graphql';
+import { ItineraryDetailsComponent } from './components/itinerary-details.component';
+import { ItineraryOverviewComponent } from './components/itinerary-overview.component';
+import { ItineraryService } from './services/itinerary.service';
 import { BookingService } from '../../core/services/booking.service';
 import { ButtonDirective } from '../../shared/directives/button.directive';
+import { ModalComponent } from '../../shared/components/modal/modal.component';
+import {
+  DataPairComponent,
+  DataPairTitleComponent,
+  DataPairValueComponent,
+} from '../../shared/components/data-pair/data-pair.component';
 
 @Component({
   selector: 'app-details',
@@ -21,9 +29,15 @@ import { ButtonDirective } from '../../shared/directives/button.directive';
     LowerCasePipe,
     TitleCasePipe,
     ButtonDirective,
+    ItineraryOverviewComponent,
+    ItineraryDetailsComponent,
+    ModalComponent,
+    DataPairValueComponent,
+    DataPairComponent,
+    DataPairTitleComponent,
   ],
+  providers: [ItineraryService],
   templateUrl: './details.component.html',
-  styleUrl: './details.component.css',
 })
 export class DetailsComponent {
   private router = inject(Router);
@@ -65,87 +79,24 @@ export class DetailsComponent {
 
         switch (contactDetail.__typename) {
           case 'EmailAddress': {
-            return { type: 'EmailAddress', value: contactDetail.address };
+            return {
+              type: 'EmailAddress',
+              title: 'Email',
+              value: contactDetail.address,
+            };
           }
           default:
             return null;
         }
       })
-      .filter(Boolean) as { type: string; value: string }[];
-  }
-
-  getItineraryStartTime(connectionId: number) {
-    const connection = this.booking.itinerary.connections.find(
-      (c) => c.id === connectionId
-    );
-
-    if (!connection) {
-      return '';
-    }
-
-    return connection.segments[0].marketingFlight.operatingFlight
-      .localScheduledDeparture;
-  }
-
-  getItineraryEndTime(connectionId: number) {
-    const connection = this.booking.itinerary.connections.find(
-      (c) => c.id === connectionId
-    );
-
-    if (!connection) {
-      return '';
-    }
-
-    return connection.segments[connection.segments.length - 1].marketingFlight
-      .operatingFlight.localScheduledArrival;
-  }
-
-  getItineraryDuration(connectionId: number) {
-    const connection = this.booking.itinerary.connections.find(
-      (c) => c.id === connectionId
-    );
-
-    if (!connection) {
-      return '';
-    }
-
-    const duration = connection.segments.reduce((d, segment) => {
-      return d.plus(
-        Duration.fromISO(segment.marketingFlight.operatingFlight.duration)
-      );
-    }, Duration.fromMillis(0));
-
-    const hours = duration.hours ? `${duration.hours}h` : '';
-    const minutes = duration.minutes ? `${duration.minutes}m` : '';
-
-    return [hours, minutes].filter(Boolean).join(' ');
-  }
-
-  getStopsCount(connectionId: number) {
-    const connection = this.booking.itinerary.connections.find(
-      (c) => c.id === connectionId
-    );
-
-    if (!connection) {
-      return '';
-    }
-
-    const segmentCount = connection.segments.length;
-
-    if (!segmentCount) {
-      return '';
-    }
-
-    if (segmentCount === 1) {
-      return 'Direct';
-    }
-
-    return `${segmentCount} stops`;
+      .filter(Boolean) as { type: string; title: string; value: string }[];
   }
 
   constructor() {
     this.booking = this.bookingService.booking as Booking;
   }
+
+  detailsModalOpen = signal(false);
 
   navigateBackToSearch() {
     this.router.navigate(['']);

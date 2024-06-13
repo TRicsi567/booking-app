@@ -6,7 +6,7 @@
 
 <div class="size-full container mx-auto p-10">
   <header class="flex justify-between">
-    <h1>
+    <h1 class="font-bold">
       {{ originCity.name }} {{ itineraryType }} {{ destinationCity.name }}
       <span class="block text-lg">
         {{ itineraryDate | date : 'fullDate' }}
@@ -32,41 +32,23 @@
 
       <div class="mt-8 space-y-6">
         @for(connection of booking.itinerary.connections; track connection.id) {
-        <div>
-          <div>
-            {{ getItineraryStartTime(connection.id) | date : 'mediumDate' }}
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="font-medium">
-              {{ connection.origin.IATACode }}
-            </span>
-            <span class="grow border border-slate-200 mx-4"></span>
-            <span class="px-2 py-1 bg-slate-200 rounded-full font-medium">{{
-              getStopsCount(connection.id)
-            }}</span>
-            <span class="grow border border-slate-200 mx-4"></span>
-            <span class="font-medium">
-              {{ connection.destination.IATACode }}
-            </span>
-          </div>
-          <div class="flex items-center justify-between">
-            <span class="font-bold">
-              {{ getItineraryStartTime(connection.id) | date : 'shortTime' }}
-            </span>
-            <span class="font-medium">{{
-              getItineraryDuration(connection.id)
-            }}</span>
-            <span class="font-bold">
-              {{ getItineraryEndTime(connection.id) | date : 'shortTime' }}
-            </span>
-          </div>
-        </div>
+        <app-itinerary-overview
+          [connection]="connection"
+        ></app-itinerary-overview>
+
+        <button
+          class="mx-auto block mt-5"
+          appButton
+          type="button"
+          (click)="detailsModalOpen.set(true)"
+        >
+          Show itinerary details
+        </button>
+        <app-modal [(opened)]="detailsModalOpen">
+          <app-itinerary-details> </app-itinerary-details>
+        </app-modal>
         }
       </div>
-
-      <button class="mx-auto block mt-5" appButton type="button">
-        Show itinerary details
-      </button>
     </section>
 
     <section>
@@ -74,10 +56,27 @@
       <hr />
       <div class="mt-8">
         @for(passenger of passengers; track passenger.id) {
-        <div>
-          {{ passenger.title.name }}
-          {{ passenger.firstName | titlecase }}
-          {{ passenger.lastName | titlecase }}
+        <div class="space-x-4">
+          <app-data-pair>
+            <app-data-pair-title>Title</app-data-pair-title>
+            <app-data-pair-value>
+              {{ passenger.title.name }}
+            </app-data-pair-value>
+          </app-data-pair>
+
+          <app-data-pair>
+            <app-data-pair-title>First name</app-data-pair-title>
+            <app-data-pair-value>
+              {{ passenger.firstName | titlecase }}
+            </app-data-pair-value>
+          </app-data-pair>
+
+          <app-data-pair>
+            <app-data-pair-title>Last name</app-data-pair-title>
+            <app-data-pair-value>
+              {{ passenger.lastName | titlecase }}
+            </app-data-pair-value>
+          </app-data-pair>
         </div>
         }
       </div>
@@ -89,8 +88,12 @@
       <div class="mt-8">
         @for(contactDetail of contactDetails; track contactDetail.value) {
         <div>
-          <div>{{ contactDetail.type }}</div>
-          <div class="font-bold">{{ contactDetail.value | lowercase }}</div>
+          <app-data-pair>
+            <app-data-pair-title>{{ contactDetail.title }}</app-data-pair-title>
+            <app-data-pair-value>
+              {{ contactDetail.value | lowercase }}
+            </app-data-pair-value>
+          </app-data-pair>
         </div>
         }
       </div>
