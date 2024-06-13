@@ -21,7 +21,6 @@ import { FormFieldComponent } from '../../shared/components/form-field/form-fiel
     FormFieldComponent,
   ],
   templateUrl: './logon.component.html',
-  styleUrl: './logon.component.css',
 })
 export class LogonComponent {
   static readonly BOOKING_CODE_MIN_LENGTH = 5;
@@ -30,11 +29,13 @@ export class LogonComponent {
   static readonly FAMILY_NAME_MIN_LENGTH = 2;
   static readonly FAMILY_NAME_MAX_LENGTH = 30;
 
+  submissionError = false;
+
   private bookingService = inject(BookingService);
   private router = inject(Router);
 
   form = new FormGroup({
-    bookingCode: new FormControl('PZIGZ3', {
+    bookingCode: new FormControl('', {
       updateOn: 'blur',
       validators: [
         Validators.required,
@@ -43,7 +44,7 @@ export class LogonComponent {
         Validators.pattern('[a-zA-Z2-9]*'),
       ],
     }),
-    familyName: new FormControl('HESP', {
+    familyName: new FormControl('', {
       updateOn: 'blur',
       validators: [
         Validators.required,
@@ -76,6 +77,7 @@ export class LogonComponent {
   async onSubmit() {
     this.form.markAllAsTouched();
     this.form.updateValueAndValidity({ onlySelf: false, emitEvent: true });
+    this.submissionError = false;
 
     if (this.form.invalid) {
       return;
@@ -89,7 +91,7 @@ export class LogonComponent {
 
       this.router.navigate(['booking-details']);
     } catch (err) {
-      // this.error = err.message
+      this.submissionError = true;
     }
   }
 }

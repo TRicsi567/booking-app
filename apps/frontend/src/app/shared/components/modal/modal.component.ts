@@ -1,4 +1,4 @@
-import { Component, ElementRef, model } from '@angular/core';
+import { Component, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonDirective } from '../../directives/button.directive';
 
@@ -31,8 +31,4 @@ export class ModalComponent {
 
   protected closedClasses = 'hidden';
   protected openClasses = 'fixed inset-0';
-
-  constructor(private el: ElementRef) {
-    // TODO
-  }
 }

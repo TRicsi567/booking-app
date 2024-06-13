@@ -15,6 +15,14 @@
       code in your booking confirmation
     </p>
 
+    @if(submissionError) {
+    <div
+      class="border border-dashed border-red-500 border-2 bg-red-400 p-4 text-red-50 mt-8 rounded-lg"
+    >
+      Could not find booking with code: {{ form.controls.bookingCode.value }}
+    </div>
+    }
+
     <form
       class="flex flex-col mt-10"
       [formGroup]="form"
@@ -27,9 +35,12 @@
               appInput
               formControlName="bookingCode"
               type="text"
+              maxlength="6"
           /></label>
           @if(shouldDisplayErrorMessage(form.controls.bookingCode)) {
-          <span>{{ getErrorMessage(form.controls.bookingCode) }}</span>
+          <span class="text-red-600 font-medium">{{
+            getErrorMessage(form.controls.bookingCode)
+          }}</span>
           }
         </app-form-field>
 
@@ -41,7 +52,9 @@
               type="text"
           /></label>
           @if(shouldDisplayErrorMessage(form.controls.familyName)) {
-          <span>{{ getErrorMessage(form.controls.familyName) }}</span>
+          <span class="text-red-600 font-medium">{{
+            getErrorMessage(form.controls.familyName)
+          }}</span>
           }
         </app-form-field>
       </div>
