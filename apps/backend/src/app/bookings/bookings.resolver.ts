@@ -1,5 +1,6 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { BookingsService } from './bookings.service';
+import { GraphQLError } from 'graphql';
 
 @Resolver('Booking')
 export class BookingsResolver {
@@ -12,6 +13,19 @@ export class BookingsResolver {
     @Args('lastName')
     lastName: string
   ) {
-    return this.bookingsService.findBooking(bookingCode, lastName);
+    const booking = this.bookingsService.findBooking(bookingCode, lastName);
+
+    if (!booking) {
+      throw new GraphQLError(
+        `Booking with code: ${bookingCode} for passanger ${lastName} not found`,
+        {
+          extensions: {
+            code: 'NOT_FOUND',
+          },
+        }
+      );
+    }
+
+    return booking;
   }
 }

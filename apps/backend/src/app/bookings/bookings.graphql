@@ -92,7 +92,7 @@ type Connection {
   duration: String!
   origin: Airport!
   destination: Airport!
-  segments: [Segment]
+  segments: [Segment!]!
 }
 
 type Itinerary {

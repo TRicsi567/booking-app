@@ -15,11 +15,9 @@ import { BookingsModule } from './bookings/bookings.module';
       typePaths: ['./**/*.graphql'],
       definitions: {
         path: join(process.cwd(), 'apps/backend/src/graphql.ts'),
-        outputAs: 'class',
+        outputAs: 'interface',
       },
     }),
   ],
-  // controllers: [AppController],
-  // providers: [AppService],
 })
 export class AppModule {}

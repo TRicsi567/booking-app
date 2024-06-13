@@ -1,0 +1,99 @@
+<div
+  class="uppercase bg-af-pattern min-h-16 flex justify-center items-center text-slate-50 text-lg font-semibold"
+>
+  Booking: {{ booking.bookingCode }}
+</div>
+
+<div class="size-full container mx-auto p-10">
+  <header class="flex justify-between">
+    <h1>
+      {{ originCity.name }} {{ itineraryType }} {{ destinationCity.name }}
+      <span class="block text-lg">
+        {{ itineraryDate | date : 'fullDate' }}
+      </span>
+    </h1>
+
+    <button
+      class="ml-5 self-start"
+      appButton
+      color="secondary"
+      type="button"
+      (click)="navigateBackToSearch()"
+    >
+      Find another booking
+    </button>
+  </header>
+
+  <main class="mt-16 flex flex-col space-y-10">
+    <section>
+      <h2>Itinerary</h2>
+
+      <hr />
+
+      <div class="mt-8 space-y-6">
+        @for(connection of booking.itinerary.connections; track connection.id) {
+        <div>
+          <div>
+            {{ getItineraryStartTime(connection.id) | date : 'mediumDate' }}
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="font-medium">
+              {{ connection.origin.IATACode }}
+            </span>
+            <span class="grow border border-slate-200 mx-4"></span>
+            <span class="px-2 py-1 bg-slate-200 rounded-full font-medium">{{
+              getStopsCount(connection.id)
+            }}</span>
+            <span class="grow border border-slate-200 mx-4"></span>
+            <span class="font-medium">
+              {{ connection.destination.IATACode }}
+            </span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="font-bold">
+              {{ getItineraryStartTime(connection.id) | date : 'shortTime' }}
+            </span>
+            <span class="font-medium">{{
+              getItineraryDuration(connection.id)
+            }}</span>
+            <span class="font-bold">
+              {{ getItineraryEndTime(connection.id) | date : 'shortTime' }}
+            </span>
+          </div>
+        </div>
+        }
+      </div>
+
+      <button class="mx-auto block mt-5" appButton type="button">
+        Show itinerary details
+      </button>
+    </section>
+
+    <section>
+      <h2>Passenger details</h2>
+      <hr />
+      <div class="mt-8">
+        @for(passenger of passengers; track passenger.id) {
+        <div>
+          {{ passenger.title.name }}
+          {{ passenger.firstName | titlecase }}
+          {{ passenger.lastName | titlecase }}
+        </div>
+        }
+      </div>
+    </section>
+
+    <section>
+      <h2>Contact details</h2>
+      <hr />
+      <div class="mt-8">
+        @for(contactDetail of contactDetails; track contactDetail.value) {
+        <div>
+          <div>{{ contactDetail.type }}</div>
+          <div class="font-bold">{{ contactDetail.value | lowercase }}</div>
+        </div>
+        }
+      </div>
+    </section>
+  </main>
+</div>

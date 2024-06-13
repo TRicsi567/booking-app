@@ -23,43 +23,43 @@ export interface Flight {
     carrier: Translation;
 }
 
-export class EmailAddress {
+export interface EmailAddress {
     address: string;
 }
 
-export class Translation {
+export interface Translation {
     code: string;
     name: string;
 }
 
-export class SellingClass {
+export interface SellingClass {
     code: string;
 }
 
-export class Terminal {
+export interface Terminal {
     name: string;
 }
 
-export class Passenger {
+export interface Passenger {
     id: number;
     firstName: string;
     lastName: string;
     title: Translation;
 }
 
-export class City {
+export interface City {
     IATACode: string;
     name?: Nullable<string>;
     country?: Nullable<Translation>;
 }
 
-export class Airport {
+export interface Airport {
     IATACode: string;
     name: string;
     city: City;
 }
 
-export class OperatingFlight implements Flight {
+export interface OperatingFlight extends Flight {
     number: string;
     carrier: Translation;
     duration: string;
@@ -77,7 +77,7 @@ export class OperatingFlight implements Flight {
     equipment: Translation;
 }
 
-export class MarketingFlight implements Flight {
+export interface MarketingFlight extends Flight {
     number: string;
     carrier: Translation;
     status: Translation;
@@ -86,7 +86,7 @@ export class MarketingFlight implements Flight {
     operatingFlight: OperatingFlight;
 }
 
-export class Segment {
+export interface Segment {
     id: number;
     type: SEGMENT_TYPE;
     informational: boolean;
@@ -95,28 +95,28 @@ export class Segment {
     marketingFlight: MarketingFlight;
 }
 
-export class Connection {
+export interface Connection {
     id: number;
     duration: string;
     origin: Airport;
     destination: Airport;
-    segments?: Nullable<Nullable<Segment>[]>;
+    segments: Segment[];
 }
 
-export class Itinerary {
+export interface Itinerary {
     type: ITINERARY_TYPE;
     connections: Connection[];
 }
 
-export class Booking {
+export interface Booking {
     bookingCode: string;
     contactDetails: ContactDetail[];
     itinerary: Itinerary;
     passengers: Passenger;
 }
 
-export abstract class IQuery {
-    abstract booking(bookingCode: string, lastName: string): Booking | Promise<Booking>;
+export interface IQuery {
+    booking(bookingCode: string, lastName: string): Booking | Promise<Booking>;
 }
 
 export type ContactDetail = EmailAddress;
