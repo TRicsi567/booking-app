@@ -1,10 +1,30 @@
-import { Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
-// eslint-disable-next-line @nx/enforce-module-boundaries
-import { Booking } from '@/graphql';
-import { BehaviorSubject } from 'rxjs';
+import { gql } from 'apollo-angular';
 
-const GET_BOOKING = gql`
+export interface Connection {
+  id: number;
+}
+
+export enum ITINERARY_TYPE {
+  ONE_WAY,
+  ROUND_TRIP,
+}
+export interface Itinerary {
+  type: ITINERARY_TYPE;
+}
+
+export interface EmailAddress {
+  address: string;
+  connections: Connection[];
+}
+
+export type ContactDetail = EmailAddress & { __typename: string };
+
+export interface Booking {
+  bookingCode: string;
+  contactDetails: ContactDetail[];
+}
+
+export const GET_BOOKING = gql`
   query GetBooking($bookingCode: String!, $lastName: String!) {
     booking(bookingCode: $bookingCode, lastName: $lastName) {
       bookingCode
@@ -129,38 +149,3 @@ const GET_BOOKING = gql`
     }
   }
 `;
-
-@Injectable({
-  providedIn: 'root',
-})
-export class BookingService {
-  booking: null | Booking = null;
-
-  booking$ = new BehaviorSubject<null | Booking>(null);
-
-  constructor(private readonly apollo: Apollo) {}
-
-  async findBooking(bookingCode: string, lastName: string) {
-    const { data, error } = await this.apollo
-      .watchQuery<{ booking: Booking }>({
-        query: GET_BOOKING,
-        variables: { bookingCode, lastName },
-      })
-      .result();
-
-    if (error) {
-      throw error;
-    }
-
-    this.booking = data.booking;
-
-    return data;
-  }
-
-  findBooking$(bookingCode: string, lastName: string) {
-    return this.apollo.watchQuery<{ booking: Booking }>({
-      query: GET_BOOKING,
-      variables: { bookingCode, lastName },
-    }).valueChanges;
-  }
-}

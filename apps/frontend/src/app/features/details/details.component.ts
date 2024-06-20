@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import {
   CommonModule,
   DatePipe,
@@ -19,6 +19,7 @@ import {
   DataPairTitleComponent,
   DataPairValueComponent,
 } from '../../shared/components/data-pair/data-pair.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-details',
@@ -39,11 +40,12 @@ import {
   providers: [ItineraryService],
   templateUrl: './details.component.html',
 })
-export class DetailsComponent {
+export class DetailsComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private bookingService = inject(BookingService);
 
   booking!: Booking;
+  bookingSubscription!: Subscription;
 
   get originCity() {
     return this.booking.itinerary.connections[0].origin.city;
@@ -92,8 +94,14 @@ export class DetailsComponent {
       .filter(Boolean) as { type: string; title: string; value: string }[];
   }
 
-  constructor() {
-    this.booking = this.bookingService.booking as Booking;
+  ngOnInit(): void {
+    this.bookingService.booking$.subscribe((booking) => {
+      this.booking = booking as Booking;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.bookingSubscription.unsubscribe();
   }
 
   detailsModalOpen = signal(false);

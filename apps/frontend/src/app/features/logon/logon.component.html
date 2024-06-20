@@ -15,13 +15,16 @@
       code in your booking confirmation
     </p>
 
-    @if(submissionError) {
-    <div
-      class="border border-dashed border-red-500 border-2 bg-red-400 p-4 text-red-50 mt-8 rounded-lg"
-    >
-      Could not find booking with code: {{ form.controls.bookingCode.value }}
-    </div>
+    @if (booking$ | async; as booking) {
+      @if (booking.error) {
+        <div
+          class="border border-dashed border-red-500 border-2 bg-red-400 p-4 text-red-50 mt-8 rounded-lg"
+        >
+          {{ booking.error }}
+        </div>
+      }
     }
+    <div></div>
 
     <form
       class="flex flex-col mt-10"
@@ -30,39 +33,58 @@
     >
       <div class="flex flex-col space-y-5">
         <app-form-field>
-          <label
-            >Booking code<input
-              appInput
-              formControlName="bookingCode"
-              type="text"
-              maxlength="6"
-          /></label>
-          @if(shouldDisplayErrorMessage(form.controls.bookingCode)) {
-          <span class="text-red-600 font-medium">{{
-            getErrorMessage(form.controls.bookingCode)
-          }}</span>
-          }
+          <label appLabel>Booking code</label>
+          <input
+            appInput
+            formControlName="bookingCode"
+            type="text"
+            maxlength="6"
+          />
+          <app-field-error>
+            <ng-template #fieldErrorTemplate let-fieldErrorType>
+              @switch (fieldErrorType) {
+                @case ('minlength') {
+                  Make sure the booking code contains at least
+                  {{ bookingCodeMinLength }} characters
+                }
+                @case ('maxlength') {
+                  Make sure the booking code contains maximum
+                  {{ bookingCodeMaxLength }} characters
+                }
+                @default {
+                  Field is required
+                }
+              }
+            </ng-template>
+          </app-field-error>
         </app-form-field>
 
         <app-form-field>
-          <label
-            >Family name<input
-              appInput
-              formControlName="familyName"
-              type="text"
-          /></label>
-          @if(shouldDisplayErrorMessage(form.controls.familyName)) {
-          <span class="text-red-600 font-medium">{{
-            getErrorMessage(form.controls.familyName)
-          }}</span>
-          }
+          <label appLabel>Family name</label>
+          <input appInput formControlName="familyName" type="text" />
+          <app-field-error>
+            <ng-template #fieldErrorTemplate let-fieldErrorType>
+              @switch (fieldErrorType) {
+                @case ('minlength') {
+                  Make sure the family name contains at least
+                  {{ familyNameMinLength }} characters
+                }
+                @case ('maxlength') {
+                  Make sure the family name contains maximum
+                  {{ familyNameMaxLength }} characters
+                }
+                @default {
+                  Field is required
+                }
+              }
+            </ng-template>
+          </app-field-error>
         </app-form-field>
       </div>
 
       <button
         class="mt-5 bg-rose-600 text-rose-50 px-4 py-2 self-center hover:bg-rose-700"
         type="submit"
-        [disabled]="form.pending"
       >
         Retrive booking
       </button>
